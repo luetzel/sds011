@@ -1,9 +1,10 @@
-# Python UI to display and read data from SDS011 PM Sensor
+# Python UI to display and read data from nova PM2.5/PM10 sensor (SDS011)
 
 This is a simple TKinter UI to poll and display data from a
 nova PM2.5/PM10 (particulate matter) sensor.
 
-Pressing the Start/Stop button sends the sensor to sleep.
+Pressing the start/stop button sends the sensor to sleep.
+
 In order to extend life of the laser diode, a discontinuos mode
 for sensor reading was implemented.
 
@@ -15,7 +16,7 @@ Window size is set to 480x320 to fit on a Raspberry Pi 3.5"
 TFT display.
 
 Serves as portable PM2.5/10 monitoring device using a battery-powered
-Pi Zero.
+Pi Zero W.
 
 ## Depends
 
