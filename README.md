@@ -21,7 +21,6 @@ Pi Zero W.
 ## Depends
 
 * apt-get install python-matplotlib
-
 * TKinter
 
 ## Changelog
@@ -31,6 +30,8 @@ Pi Zero W.
 ## Todo
 
 * Add date time display.
+* Connect data points with lines
+
 
 ## Known Bugs
 
