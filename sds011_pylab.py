@@ -140,17 +140,23 @@ class App:
                     return data
 
         def sensor_live(self):
-            for x in range(0,330,30):
+            x = []
+            y1 = []
+            y2 = []
+            for i in range(0,330,30):
                 self.sensor_wake()
                 time.sleep(10)
-                y = self.sensor_read()
-                if y is not None:
+                pm = self.sensor_read()
+                if pm is not None:
+                    x.append(i)
+                    y1.append(pm[0])
+                    y2.append(pm[1])
                     with open('data.csv', 'ab') as csvfile:
                         file = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                        file.writerow([datetime.datetime.now().replace(microsecond=0).isoformat().replace('T', ' '), y[0], y[1]])
+                        file.writerow([datetime.datetime.now().replace(microsecond=0).isoformat().replace('T', ' '), pm[0], pm[1]])
                         csvfile.close()
-                    self.line1, = self.ax.plot(x,y[0],'r-x')
-                    self.line2, = self.ax.plot(x,y[1],'b-x')
+                    line1, = self.ax.plot(x,y1,'r-x')
+                    line2, = self.ax.plot(x,y2,'b-x')
                     self.canvas.draw()
                 self.sensor_sleep()
                 time.sleep(20)
@@ -160,7 +166,7 @@ class App:
 
 root = Tk()
 root.wm_title("SDS011 PM Sensor")
-#root.overrideredirect(True)
+root.overrideredirect(True)
 app = App(root)
 root.geometry("480x320+0+0")
 root.mainloop()

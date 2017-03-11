@@ -27,6 +27,7 @@ Pi Zero W.
 ## Changelog
 
 2017-03-08	Initial version.
+2017-03-11	Interconnect data points. Credits go to the Raspi Code Jam Berlin
 
 ## Todo
 
