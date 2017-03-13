@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Author:   Dr. Martin Luetzelberger
+# Author:   Dr. M. Luetzelberger
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
-# Purpose:  UI for controlling DSD011 PM sensor
-# Version:  1.0
+# Purpose:  UI for controlling SDS011 PM sensor
+# Version:  1.0.1
 # Depends:  must use Python 2.7, requires matplotlib
-# Changes:  
+# Changes:
+# Credits:  http://raspberryblog.de  
 # TODO:     Enable sleep on start
 #           Add datetime to UI 
 
@@ -143,7 +144,7 @@ class App:
             x = []
             y1 = []
             y2 = []
-            for i in range(0,330,30):
+            for i in range(0,330,30): # change time interval here, if required
                 self.sensor_wake()
                 time.sleep(10)
                 pm = self.sensor_read()
@@ -151,7 +152,7 @@ class App:
                     x.append(i)
                     y1.append(pm[0])
                     y2.append(pm[1])
-                    with open('data.csv', 'ab') as csvfile:
+                    with open('/home/pi/data.csv', 'ab') as csvfile:
                         file = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                         file.writerow([datetime.datetime.now().replace(microsecond=0).isoformat().replace('T', ' '), pm[0], pm[1]])
                         csvfile.close()
@@ -166,6 +167,7 @@ class App:
 
 root = Tk()
 root.wm_title("SDS011 PM Sensor")
+# hide window decoration
 root.overrideredirect(True)
 app = App(root)
 root.geometry("480x320+0+0")
