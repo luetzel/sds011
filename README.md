@@ -23,9 +23,9 @@ During data recording, a live plot PM2.5/PM10 is presented in a mathplotlib wind
 The script was created to build a portable PM2.5/PM10 monitoring device using
  a battery-powered Pi Zero W and 3.5" touch TFT.
 
-## Depends
+## Installation
 
-In order to use this script, python-matplotlib and python-tk must be installed. 
+In order to run this script, python-matplotlib and python-tk must be installed. 
 On a Raspberry Pi do:
 
 ```
