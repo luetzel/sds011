@@ -1,7 +1,8 @@
 # Python UI to display and read data from nova PM2.5/PM10 sensor (SDS011)
 
 This is a simple TKinter UI to poll and display data from a nova PM2.5/PM10
- (particulate matter) sensor.
+ (particulate matter) sensor. TK window size is set to 480x320 to fit onto a Raspberry Pi 3.5"
+TFT (touch) display.
 
 [Link to SDS011 user guide](http://www.inovafitness.com/software/SDS011%20laser%20PM2.5%20sensor%20specification-V1.3.pdf)
 
@@ -15,13 +16,10 @@ In order to extend life of the laser diode, a discontinuos mode for sensor readi
  was implemented. The record button enables discontinuos reading for 5 min and writes 
 data into a CSV. 
 
-A Live plot PM2.5/PM10 is presented in a mathplotlib window
+A live plot PM2.5/PM10 is presented in a mathplotlib window
  (see screenshot).
 
 ![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
-
-TK window size is set to 480x320 to fit onto a Raspberry Pi 3.5"
-TFT (touch) display.
 
 Serves as portable app for PM2.5/PM10 monitoring using a battery-powered
 Pi Zero W.
