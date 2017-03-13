@@ -13,10 +13,10 @@ documented in manufacturer's datasheet.
 To re-enable laser diode and fan, press the start button.
 
 Furthermore, a discontinuos mode for sensor reading was implemented. The record button
- enables discontinuos sensor reading for 5 min and writes data into a CSV file 
-(/home/pi/data.csv). 
+ enables discontinuos sensor reading for 5 min and writes data each 30 seconds into a
+ CSV file (/home/pi/data.csv). 
 
-A live plot PM2.5/PM10 is presented in a mathplotlib window (see screenshot).
+During data recording, a live plot PM2.5/PM10 is presented in a mathplotlib window (see screenshot).
 
 ![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
 
