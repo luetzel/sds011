@@ -16,6 +16,8 @@ data into a CSV.
 A Live plot PM2.5/PM10 is presented in a mathplotlib window
  (see screenshot).
 
+![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
+
 TK window size is set to 480x320 to fit onto a Raspberry Pi 3.5"
 TFT (touch) display.
 
