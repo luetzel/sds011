@@ -1,16 +1,18 @@
 # Python UI to display and read data from nova PM2.5/PM10 sensor (SDS011)
 
-This is a simple TKinter UI to poll and display data from a
-nova PM2.5/PM10 (particulate matter) sensor.
+This is a simple TKinter UI to poll and display data from a nova PM2.5/PM10
+ (particulate matter) sensor.
 
-[SDS011](http://inovafitness.com/en/Laser-PM2-5-Sensor-SDS011-35.html)
+[Link to SDS011 user guide](http://www.inovafitness.com/software/SDS011%20laser%20PM2.5%20sensor%20specification-V1.3.pdf)
 
-Pressing the start/stop button wakes/sends the sensor from/to sleep mode.
+Pressing the stop button sends the sensor to sleep mode. It disables the fan
+and laser diode to extend it's live-span. This feature wasn't documented in
+ manufacturer's datasheet.
 
-In order to extend life of the laser diode, a discontinuos mode
-for sensor reading was implemented.
+To re-enable the sensor, press the start button.
 
-The record button enables discontinuos reading for 5 min and writes 
+In order to extend life of the laser diode, a discontinuos mode for sensor reading
+ was implemented. The record button enables discontinuos reading for 5 min and writes 
 data into a CSV. 
 
 A Live plot PM2.5/PM10 is presented in a mathplotlib window
@@ -44,10 +46,10 @@ sudo apt-get install python-matplotlib python-tk
 
 ## Known Bugs
 
-* Sensor read fails in 1 out of 10 attempts for unknown reason.
+* Sensor read fails in approx. 1 out of 10 attempts for unknown reason.
 
 ## Credits
 
-* Raspberry Code Jam (Berlin)
-
-
+* [Yet another Raspberry Blog](http://raspberryblog.de)
+* [c't Make Magazine: Feinstaubmessung mit dem Raspi](https://www.heise.de/make/inhalt/2016/14/026/)
+* [Raspberry Code Jam (Berlin)](http://raspberryjamberlin.de/)
