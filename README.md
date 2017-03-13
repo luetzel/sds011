@@ -6,23 +6,22 @@ TFT (touch) display.
 
 [Link to SDS011 user guide](http://www.inovafitness.com/software/SDS011%20laser%20PM2.5%20sensor%20specification-V1.3.pdf)
 
-Pressing the stop button sends the sensor to sleep mode. It disables the fan
-and laser diode to extend it's live-span. This feature wasn't documented in
- manufacturer's datasheet.
+Pressing the stop button sends the sensor to sleep mode. It disables both, fan
+and laser diode in order to extend sensors's live-span. This feature wasn't 
+documented in manufacturer's datasheet.
 
-To re-enable the sensor, press the start button.
+To re-enable laser diode and fan, press the start button.
 
-In order to extend life of the laser diode, a discontinuos mode for sensor reading
- was implemented. The record button enables discontinuos reading for 5 min and writes 
-data into a CSV. 
+Furthermore, a discontinuos mode for sensor reading was implemented. The record button
+ enables discontinuos sensor reading for 5 min and writes data into a CSV file 
+(/home/pi/data.csv). 
 
-A live plot PM2.5/PM10 is presented in a mathplotlib window
- (see screenshot).
+A live plot PM2.5/PM10 is presented in a mathplotlib window (see screenshot).
 
 ![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
 
-Serves as portable app for PM2.5/PM10 monitoring using a battery-powered
-Pi Zero W.
+The script was created to build a portable PM2.5/PM10 monitoring device using
+ a battery-powered Pi Zero W and 3.5" touch TFT.
 
 ## Depends
 
