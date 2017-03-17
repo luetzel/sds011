@@ -5,7 +5,7 @@
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.0.1
+# Version:  1.1.0
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:
 # Credits:  http://raspberryblog.de  
@@ -28,8 +28,8 @@ ser.flushInput()
 
 gpsd = None #seting the global variable
 
-datafile = "/home/luetzel/data.csv"
-kmlpath = "/home/luetzel/"
+datafile = "/home/pi/data.csv"
+kmlpath = "/home/pi/"
 
 class GpsPoller(threading.Thread):
   def __init__(self):
@@ -184,19 +184,22 @@ class App:
                     x.append(i)
                     y1.append(pm[0])
                     y2.append(pm[1])
+                    lat = gpsd.fix.latitude
+                    lon = gpsd.fix.longitude
                     with open(datafile, 'ab') as csvfile:
                         file = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                        file.writerow([str(gpsd.utc.replace('T', ' '))[:19], pm[0], pm[1],gpsd.fix.latitude,gpsd.fix.longitude])
+                        file.writerow([str(gpsd.utc)[:19], pm[0], pm[1],lat,lon])
                         csvfile.close()
-                    pnt = kml.newpoint(name=gpsd.utc, coords=[(gpsd.fix.longitude,gpsd.fix.latitude)])  # lon, lat, optional height
-                    pnt.description = "PM2.5: " + str(pm[0]) +  " PM10: " + str(pm[1])
+                    if (lat != None and lon != None):    
+                        pnt = kml.newpoint(name=gpsd.utc, coords=[(lon,lat)])  # lon, lat, optional height
+                        pnt.description = "PM2.5: " + str(pm[0]) +  " PM10: " + str(pm[1])
                     line1, = self.ax.plot(x,y1,'r-x')
                     line2, = self.ax.plot(x,y2,'b-x')
                     self.canvas.draw()
                 self.sensor_sleep()
                 time.sleep(20)
-            kmlfile = kmlpath + "messung_" + "" + ".kml"                    
-            kml.save()
+            kmlfile = kmlpath + "sample_" + str(datetime.datetime.now().replace(microsecond=0).isoformat()) + ".kml"                    
+            kml.save(kmlfile)
 
         def quit(self):
             root.destroy()

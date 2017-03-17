@@ -32,10 +32,24 @@ On a Raspberry Pi do:
 sudo apt-get install python-matplotlib python-tk
 ```
 
+To connect with and read from GPS:
+
+```
+sudo apt-get install python gpsd gpsd-clients
+```
+
+For generating klm files (Google Maps Layer):
+
+```
+sudo pip install simplekml
+```
+
 ## Changelog
 
 * 2017-03-08	Initial version.
 * 2017-03-11	Interconnect data points.
+* 2017-03-17    New branch: Support ublox-6 GPS
+                Requires installation of gps-tools
 
 ## Todo
 
