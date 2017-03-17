@@ -13,7 +13,8 @@
 #           Add datetime to UI 
 
 from __future__ import print_function
-import serial, struct, time, pylab, csv, datetime
+import serial, struct, time, pylab, csv, datetime, threading
+from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -25,35 +26,63 @@ ser.baudrate = 9600
 ser.open()
 ser.flushInput()
 
+gpsd = None #seting the global variable
+
+datafile = "/home/luetzel/data.csv"
+
+class GpsPoller(threading.Thread):
+  def __init__(self):
+    threading.Thread.__init__(self)
+    global gpsd #bring it in scope
+    gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
+    self.current_value = None
+    self.running = True #setting the thread running to true
+
+  def run(self):
+    global gpsd
+    while gpsp.running:
+      gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+
 class App:
         def __init__(self, master):
+            
             frame = Frame(master)
             frame.pack()
-            Label(frame, text="PM 2.5: ").grid(row=0, columnspan=2)
-            Label(frame, text="µg/m^3: ").grid(row=0, column=3)
-            Label(frame, text="PM  10: ").grid(row=1, columnspan=2)
-            Label(frame, text="µg/m^3: ").grid(row=1, column=3)
+            
+            Label(frame, text="Lat: ").grid(row=0, column=0)
+            Label(frame, text="Lon: ").grid(row=1, column=0)
+            
+            self.latitude = DoubleVar()
+            Label(frame, textvariable=self.latitude).grid(row=0, column=1)
+            self.longitude = DoubleVar()
+            Label(frame, textvariable=self.longitude).grid(row=1, column=1)
+            
+            Label(frame, text="PM 2.5: ").grid(row=0, column=2)
+            Label(frame, text="PM  10: ").grid(row=1, column=2)
+            
+            Label(frame, text="µg/m^3: ").grid(row=0, column=4)
+            Label(frame, text="µg/m^3: ").grid(row=1, column=4)
             
             self.result_pm25 = DoubleVar()
-            Label(frame, textvariable=self.result_pm25).grid(row=0, column=2)
+            Label(frame, textvariable=self.result_pm25).grid(row=0, column=3)
 
             self.result_pm10 = DoubleVar()
-            Label(frame, textvariable=self.result_pm10).grid(row=1, column=2)
+            Label(frame, textvariable=self.result_pm10).grid(row=1, column=3)
 
             button0 = Button(frame, text="Start", command=self.sensor_wake)
-            button0.grid(row=2, column=0)
+            button0.grid(row=4, column=0)
 
             button1 = Button(frame, text="Stop", command=self.sensor_sleep)
-            button1.grid(row=2, column=1)
+            button1.grid(row=4, column=1)
 
             button2 = Button(frame, text="Read", command=self.sensor_read)
-            button2.grid(row=2, column=2)
+            button2.grid(row=4, column=2)
 
             button3 = Button(frame, text="Record", command=self.sensor_live)
-            button3.grid(row=2, column=3)
+            button3.grid(row=4, column=3)
 
             button4 = Button(frame, text="Quit", command=self.quit)
-            button4.grid(row=2, column=4)
+            button4.grid(row=4, column=4)
 
             #Label(frame, text="").grid(row=3, column=3)
 
@@ -126,6 +155,8 @@ class App:
             pm10 = r[1]/10.0
             checksum = sum(ord(v) for v in d[2:8])%256
             #print("PM 2.5: {} μg/m^3  PM 10: {} μg/m^3 CRC={}".format(pm25, pm10, "OK" if (checksum==r[2] and r[3]==0xab) else "NOK"))
+            self.latitude.set(str(gpsd.fix.latitude)[:6])
+            self.longitude.set(str(gpsd.fix.longitude)[:6])
             self.result_pm25.set(pm25)
             self.result_pm10.set(pm10)
             data = [pm25, pm10]
@@ -152,9 +183,9 @@ class App:
                     x.append(i)
                     y1.append(pm[0])
                     y2.append(pm[1])
-                    with open('/home/pi/data.csv', 'ab') as csvfile:
+                    with open(datafile, 'ab') as csvfile:
                         file = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                        file.writerow([datetime.datetime.now().replace(microsecond=0).isoformat().replace('T', ' '), pm[0], pm[1]])
+                        file.writerow([str(gpsd.utc.replace('T', ' '))[:19], pm[0], pm[1],gpsd.fix.latitude,gpsd.fix.longitude])
                         csvfile.close()
                     line1, = self.ax.plot(x,y1,'r-x')
                     line2, = self.ax.plot(x,y2,'b-x')
@@ -165,10 +196,19 @@ class App:
         def quit(self):
             root.destroy()
 
-root = Tk()
-root.wm_title("SDS011 PM Sensor")
-# hide window decoration
-root.overrideredirect(True)
-app = App(root)
-root.geometry("480x320+0+0")
-root.mainloop()
+gpsp = GpsPoller()
+try:
+    gpsp.start()
+    root = Tk()
+    root.wm_title("SDS011 PM Sensor")
+    # hide window decoration
+    #root.overrideredirect(True)
+    app = App(root)
+    root.geometry("480x320+0+0")
+    root.mainloop()
+
+except (KeyboardInterrupt, SystemExit): #when you press ctrl+c
+    print("\nKilling Thread...")
+    gpsp.running = False
+    gpsp.join() # wait for the thread to finish what it's doing
+    print("Done.\nExiting.")
