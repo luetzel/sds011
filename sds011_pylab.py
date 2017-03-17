@@ -13,7 +13,7 @@
 #           Add datetime to UI 
 
 from __future__ import print_function
-import serial, struct, time, pylab, csv, datetime, threading
+import serial, struct, time, pylab, csv, datetime, threading, simplekml
 from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -29,6 +29,7 @@ ser.flushInput()
 gpsd = None #seting the global variable
 
 datafile = "/home/luetzel/data.csv"
+kmlpath = "/home/luetzel/"
 
 class GpsPoller(threading.Thread):
   def __init__(self):
@@ -187,16 +188,22 @@ class App:
                         file = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                         file.writerow([str(gpsd.utc.replace('T', ' '))[:19], pm[0], pm[1],gpsd.fix.latitude,gpsd.fix.longitude])
                         csvfile.close()
+                    pnt = kml.newpoint(name=gpsd.utc, coords=[(gpsd.fix.longitude,gpsd.fix.latitude)])  # lon, lat, optional height
+                    pnt.description = "PM2.5: " + str(pm[0]) +  " PM10: " + str(pm[1])
                     line1, = self.ax.plot(x,y1,'r-x')
                     line2, = self.ax.plot(x,y2,'b-x')
                     self.canvas.draw()
                 self.sensor_sleep()
                 time.sleep(20)
+            kmlfile = kmlpath + "messung_" + "" + ".kml"                    
+            kml.save()
 
         def quit(self):
             root.destroy()
 
 gpsp = GpsPoller()
+kml = simplekml.Kml()
+
 try:
     gpsp.start()
     root = Tk()
