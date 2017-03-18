@@ -21,7 +21,7 @@ Furthermore, a discontinuos "Auto" mode for sensor reading was implemented. The 
 
 During data recording, a live plot PM2.5/PM10 is generated in a mathplotlib window (see screenshot).
 
-![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
+![Image](https://github.com/luetzel/sds011/blob/gpsdata/screenshot.png)
 
 The script was created to build a portable PM2.5/PM10 monitoring device using a battery-powered
  Pi Zero W and 3.5" touch TFT.
