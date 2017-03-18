@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=SDS011
+Comment=PM25
+Exec=/usr/local/bin/sds011_pylab.py
+Icon=/usr/share/pixmaps/python2.7.xpm
+Terminal=false
+Type=Application
+Categories=Development;
+StartupNotify=true
+NoDisplay=false
