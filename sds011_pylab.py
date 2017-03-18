@@ -192,7 +192,7 @@ class App:
                         csvfile.close()
                     if (lat != None and lon != None):    
                         pnt = kml.newpoint(name=gpsd.utc, coords=[(lon,lat)])  # lon, lat, optional height
-                        pnt.description = "PM2.5: " + str(pm[0]) +  " PM10: " + str(pm[1])
+                        pnt.description = "PM2.5: " + str(pm[0]) +  " ug/m3 PM10: " + str(pm[1]) + " ug/m3"
                     line1, = self.ax.plot(x,y1,'r-x')
                     line2, = self.ax.plot(x,y2,'b-x')
                     self.canvas.draw()
