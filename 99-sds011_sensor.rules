@@ -1,0 +1,1 @@
+ACTION=="add|remove", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523"  RUN+="/usr/local/bin/sds011_sleep.py"
