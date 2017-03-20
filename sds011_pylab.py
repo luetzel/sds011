@@ -223,7 +223,7 @@ class App:
             for i in range(0, 330, 30):
                 self.sensor_wake()
                 time.sleep(10)
-                data = self.sensor_read()sds011_sleep.py
+                data = self.sensor_read()
 
             # plot data on display    
                 if data is not None:
