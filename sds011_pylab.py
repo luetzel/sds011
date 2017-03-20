@@ -239,7 +239,7 @@ class App:
                     self.kml_save(data)
                 # discontinuous sensor read    
                 self.sensor_sleep()
-                time.sleep(20)sds011_sleep.py
+                time.sleep(20)
 
             self.sensor_sleep()
 
