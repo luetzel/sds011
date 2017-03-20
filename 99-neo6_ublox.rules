@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="usb", SYSFS{idVendor}=="1546", SYSFS{idProduct}=="01a6", NAME="ttyACM0", RUN+="/usr/sbin/gpsd /dev/ttyACM0"
+ACTION=="remove", SUBSYSTEM=="usb", SYSFS{idVendor}=="1546", SYSFS{idProduct}=="01a6", NAME="ttyACM0", RUN+="/usr/bin/killall gpsd"
