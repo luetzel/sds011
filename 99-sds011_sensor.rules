@@ -1,1 +1,1 @@
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523"  RUN="/usr/local/bin/sds011_sleep.py"
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", NAME="ttyUSB0", SYMLINK+="/dev/ttyUSB0", RUN="/usr/local/bin/sds011_sleep.py"
