@@ -20,6 +20,12 @@ During data recording, a live plot PM2.5/PM10 is presented in a mathplotlib wind
 
 ![Image](https://github.com/luetzel/sds011/blob/master/screenshot.png)
 
+## GPS
+Both the gpsdata and googlemaps branch allow graphical representation of the collected data
+as a GoogleMaps overlay.
+
+![Image](https://github.com/luetzel/sds011/blob/master/screenshot2.png)
+
 The script was created to build a portable PM2.5/PM10 monitoring device using
  a battery-powered Pi Zero W and 3.5" touch TFT.
 
