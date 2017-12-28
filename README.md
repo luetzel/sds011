@@ -36,6 +36,8 @@ sudo apt-get install python-matplotlib python-tk
 
 * 2017-03-08	Initial version.
 * 2017-03-11	Interconnect data points.
+* 2017-03-17    New gpsdata branch for storing gpsdata as GoogleMaps placemarks
+* 2017-12-28    New googlemaps branch to represent PM values as color-coded lines
 
 ## Todo
 
@@ -50,3 +52,4 @@ sudo apt-get install python-matplotlib python-tk
 * [Yet another Raspberry Blog](http://raspberryblog.de)
 * [c't Make Magazine: Feinstaubmessung mit dem Raspi](https://www.heise.de/make/inhalt/2016/14/026/)
 * [Raspberry Code Jam (Berlin)](http://raspberryjamberlin.de/)
+* [Ingmar Stapel] (https://github.com/custom-build-robots/Feinstaubsensor)
