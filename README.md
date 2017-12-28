@@ -52,4 +52,4 @@ sudo apt-get install python-matplotlib python-tk
 * [Yet another Raspberry Blog](http://raspberryblog.de)
 * [c't Make Magazine: Feinstaubmessung mit dem Raspi](https://www.heise.de/make/inhalt/2016/14/026/)
 * [Raspberry Code Jam (Berlin)](http://raspberryjamberlin.de/)
-* [Ingmar Stapel] (https://github.com/custom-build-robots/Feinstaubsensor)
+* [Ingmar Stapel](https://github.com/custom-build-robots/Feinstaubsensor)
