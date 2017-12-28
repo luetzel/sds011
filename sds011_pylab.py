@@ -5,11 +5,13 @@
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.2.0
+# Version:  1.3.0
 # License:  GPL 3.0
 # Depends:  must use Python 2.7, requires matplotlib
-# Changes:
+# Changes:  Store data without simplekml module
+#           Draw lines instead of placemarks
 # Credits:  http://raspberryblog.de  
+#           https://github.com/custom-build-robots/Feinstaubsensor
 # TODO:     Add datetime to UI 
 #
 
@@ -17,7 +19,7 @@ from __future__ import print_function
 from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import serial, struct, time, pylab, csv, datetime, threading, simplekml, tkMessageBox, os, getpass
+import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess
 
 # open serial port
 ser = serial.Serial()
@@ -33,16 +35,15 @@ gpsd = None
 
 # path to log files
 username = getpass.getuser()
-kml = simplekml.Kml()
 datafile = "/home/" + username + "/data.csv"
 kmlpath = "/home/" + username + "/"
 
 # requires gpsd /dev/ttyACM0 running in background
 class GpsPoller(threading.Thread):
   def __init__(self):
-    threading.Thread.__init__(self)
     # bring it in scope
     global gpsd
+    threading.Thread.__init__(self)
     # starting the stream of info
     gpsd = gps(mode=WATCH_ENABLE)
     self.current_value = None
@@ -81,6 +82,11 @@ class App:
 
             self.result_pm10 = DoubleVar()
             Label(frame, textvariable=self.result_pm10).grid(row=1, column=3)
+            
+            if (self.is_running("gpsd") == True):
+                Label(frame, text=" GPSD ON", fg="green").grid(row=0, column=5)
+            elif (self.is_running("gpsd") == False):
+                Label(frame, text=" GPSD OFF", fg="red").grid(row=0, column=5)
 
             button0 = Button(frame, text="Start", command=self.sensor_wake)
             button0.grid(row=4, column=0)
@@ -174,6 +180,7 @@ class App:
             # read GPS position
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
+            gps_time = gpsd.utc
 
             # print data on display
             self.latitude.set(str(latitude)[:6])
@@ -182,7 +189,7 @@ class App:
             self.result_pm10.set(pm10)
 
             # pack results into variable
-            data = [pm25, pm10, longitude, latitude]
+            data = [pm25, pm10, longitude, latitude, gps_time]
             return data
 
         def single_read(self):
@@ -218,11 +225,25 @@ class App:
                 
             # init arrays to hold data points    
             x, y1, y2 = [], [], []
+            
+            lat_old = "initial"
+            lon_old = "initial"
+            pm_old_25 = 0
+            pm_old_10 = 0
 
+            # create kml filenames
+            fname25_line = kmlpath+'pm_25_line_'+datetime.datetime.now().strftime ("%Y%m%d_%H_%M_%S")+'.kml'
+            fname10_line = kmlpath+'pm_10_line_'+datetime.datetime.now().strftime ("%Y%m%d_%H_%M_%S")+'.kml'
+            
+            # create kml files
+            self.write_kml_file(fname25_line, "25")
+            self.write_kml_file(fname10_line, "10")
+            
             # sample each 30 s for 5 min
             for i in range(0, 330, 30):
                 self.sensor_wake()
                 time.sleep(10)
+                # get data from sensor
                 data = self.sensor_read()
 
             # plot data on display    
@@ -235,17 +256,37 @@ class App:
                     self.canvas.draw()
                     # append to csv
                     self.csv_save(data)
-                    # append to kml
-                    self.kml_save(data)
+                    
+                    # Note: order of data list [pm25, pm10, longitude, latitude]
+                    
+                    if lat_old == "initial":
+                        lat_old = data[3]
+
+                    if lon_old == "initial":    
+                        lon_old = data[2]
+                    
+                    color_25 = self.color_selection(data[0])
+                    color_10 = self.color_selection(data[1])
+                    
+                    self.write_kml_line(str(data[0]), str(pm_old_25), str(lon_old), str(lat_old), str(data[3]), str(data[2]), str(data[4]), fname25_line, color_25)
+                    self.write_kml_line(str(data[1]), str(pm_old_10), str(lon_old), str(lat_old), str(data[3]), str(data[2]), str(data[4]), fname10_line, color_10)
+                    
+                    lat_old = data[3]
+                    lon_old = data[2]
+                
+                    pm_old_25 = data[0]
+                    pm_old_10 = data[1]
+                    
                 # discontinuous sensor read    
                 self.sensor_sleep()
                 time.sleep(20)
-
+            
+            # measurement done - send sensor to sleep
             self.sensor_sleep()
-
-            # store GPS and sensor data in kml file
-            kmlfile = kmlpath + "sample_" + str(datetime.datetime.now().replace(microsecond=0).isoformat()) + ".kml"                    
-            kml.save(kmlfile)
+            
+            # close kml files
+            self.close_kml_file(fname25_line, "25")
+            self.close_kml_file(fname10_line, "10")
 
             self.plot = True
             
@@ -261,6 +302,13 @@ class App:
                 root.update()
                 self.sensor_sleep()
 
+        def is_running(self, process):
+                s = subprocess.Popen(["ps","axw"],stdout=subprocess.PIPE)
+                for x in s.stdout:
+                        if re.search(process, x):
+                                return True
+                return False
+
         def clear_plot(self):
                 self.ax.cla()
                 self.ax.grid(True)
@@ -270,14 +318,70 @@ class App:
                 self.ax.axis([0,300,0,60])
                 self.canvas.draw()
 
-        def kml_save(self, data):
-            # do not add points if thers is no GPS signal           
-            if (str(data[2]) != "nan" and str(data[3]) != "nan"):    
-                        pnt = kml.newpoint(name=gpsd.utc, coords=[(data[2],data[3])])  # lon, lat, optional height
-                        pnt.description = "PM2.5: " + str(data[0]) +  " ug/m3 PM10: " + str(data[1]) + " ug/m3"
-
         def quit(self):
             root.destroy()
+            
+        def color_selection(self, value):
+            # red
+            color = "#64009614" 
+            if 50 <= value <= 2000:
+                color = "#641400F0"
+            # orange
+            elif 25 <= value <= 49:
+                color = "#641478FF"
+            # green
+            elif 0 <= value < 25:
+                color = "#64009614"     
+            return color
+
+        def write_kml_line(self, value_pm, value_pm_old, value_lon_old, value_lat_old, value_lat, value_lon, value_time, value_fname, value_color):
+           pm = value_pm
+           pm_old = value_pm_old
+           lat_old = value_lat_old
+           lon_old = value_lon_old
+           lat = value_lat
+           lon = value_lon
+           time = value_time
+           fname = value_fname
+           color = value_color 
+           
+           with open(fname,'a+') as file:
+                if os.path.exists(fname):
+                    file.write("   <Placemark>\n")
+                    file.write("   <name>"+ pm +"</name>\n")
+                    file.write("    <description>"+ pm +"</description>\n")
+                    file.write("    <Point>\n")
+                    file.write("      <coordinates>" + lon + "," + lat + "," + pm + "</coordinates>\n")
+                    file.write("    </Point>\n")
+                    file.write("       <LineString>\n")
+                    file.write("           <altitudeMode>relativeToGround</altitudeMode>\n")
+                    file.write("           <coordinates>" + lon + "," + lat + "," + pm + "\n           "+ lon_old+ ","+ lat_old+ "," + pm_old + "</coordinates>\n")
+                    file.write("       </LineString>\n")
+                    file.write("       <Style>\n")
+                    file.write("           <LineStyle>\n")
+                    file.write("               <color>" + color + "</color>\n")
+                    file.write("               <width>8</width>\n")
+                    file.write("           </LineStyle>\n")
+                    file.write("       </Style>\n")
+                    file.write("   </Placemark>\n")   
+                    file.close()
+                    
+        def write_kml_file(self, value_fname, pm_type):
+            fname = value_fname
+            with open(fname,'a+') as file:
+                    file.write("<?xml version='1.0' encoding='UTF-8'?>\n")
+                    file.write("<kml xmlns='http://earth.google.com/kml/2.1'>\n")
+                    file.write("<Document>\n")
+                    file.write("   <name> PM_Line_" + pm_type + "_" + datetime.datetime.now().strftime ("%Y%m%d") + ".kml </name>\n")
+                    file.write('\n')
+                    file.close()
+                        
+        # close file
+        def close_kml_file(self, file_name, type):
+            with open(file_name,'a+') as file:
+                file.write("  </Document>\n")
+                file.write("</kml>\n")  
+                file.close()
 
 try:
     gpsp = GpsPoller()
