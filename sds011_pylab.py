@@ -30,9 +30,9 @@ class App:
             frame = Frame(master)
             frame.pack()
             Label(frame, text="PM 2.5: ").grid(row=0, columnspan=2)
-            Label(frame, text="µg/m^3: ").grid(row=0, column=3)
+            Label(frame, text=u"µg/m\u00b3: ").grid(row=0, column=3)
             Label(frame, text="PM  10: ").grid(row=1, columnspan=2)
-            Label(frame, text="µg/m^3: ").grid(row=1, column=3)
+            Label(frame, text=u"µg/m\u00b3: ").grid(row=1, column=3)
             
             self.result_pm25 = DoubleVar()
             Label(frame, textvariable=self.result_pm25).grid(row=0, column=2)
