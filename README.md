@@ -29,6 +29,13 @@ Furthermore, a discontinuos "Auto" mode for sensor reading was implemented. The 
 
 During data recording, a live plot PM2.5/PM10 is generated in a mathplotlib window (see screenshot).
 
+Note: In order to fit onto the display you may want to disable window decorations by uncommenting
+the line:
+
+```
+#root.overrideredirect(True)
+```
+
 ![Image](https://github.com/luetzel/sds011/blob/googlemaps/screenshot1.png)
 
 ## Branches
