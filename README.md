@@ -25,7 +25,7 @@ sensor once and sends it to sleep again.
 
 Furthermore, a discontinuos "Auto" mode for sensor reading was implemented. The record button
  enables discontinuos sensor reading for a period of 10 minutes and writes data each 30 seconds
-  into a CSV file which is located in (/home/<username>/data.csv). 
+  into a CSV file which is located in (/home/\<username\>/data.csv). 
 
 During data recording, a live plot PM2.5/PM10 is generated in a mathplotlib window (see screenshot).
 
