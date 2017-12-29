@@ -38,7 +38,8 @@ and/or GoogleEarth.
 ![Image](https://github.com/luetzel/sds011/blob/googlemaps/screenshot2.png)
 
 PM values are represented as placemarks. The waypoints are interconnected by colored lines, where
-green indicates values below 25 ug/m3, orange > 25 < 49 ug/m3 and red > 50 ug/m3.
+green color indicates values below 25 ug/m3, orange color values above 25 < 49 ug/m3 and red color values 
+above 50 ug/m3.
 
 ## UDEV Rule
 
