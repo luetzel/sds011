@@ -81,8 +81,8 @@ class App:
             self.longitude = DoubleVar()
             Label(frame, textvariable=self.longitude,font=("Courier",10, "normal")).grid(row=1, column=1, columnspan=2)
             
-            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8).grid(row=0, column=3, columnspan=2)
-            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8).grid(row=1, column=3, columnspan=2)
+            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8, fg="red").grid(row=0, column=3, columnspan=2)
+            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8, fg="blue").grid(row=1, column=3, columnspan=2)
             
             self.result_pm25 = DoubleVar()
             Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=8).grid(row=0, column=4, columnspan=2)
