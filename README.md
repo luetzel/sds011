@@ -10,7 +10,7 @@ The script was created to build a portable PM2.5/PM10 monitoring device using a 
 ![Image](https://github.com/luetzel/sds011/blob/googlemaps/raspi_mobile_sds011.jpg)
 
 All components are attached to a Raspberry Pi via USB or using it's GPIO
-header. The SDS sensor is connected throught a USB-Serial-Converter, so that
+header. The SDS sensor is connected through a USB-Serial-Converter, so that
 PM data are retrieved from /dev/ttyUSB0. Information on how to convert sensor
  data into PM2.5 and PM10 values can be found within the [SDS011 user guide](http://www.inovafitness.com/software/SDS011%20laser%20PM2.5%20sensor%20specification-V1.3.pdf)
 
