@@ -29,16 +29,16 @@ class App:
         def __init__(self, master):
             frame = Frame(master)
             frame.pack()
-            Label(frame, text="PM 2.5: ").grid(row=0, columnspan=2)
-            Label(frame, text=u"µg/m\u00b3: ").grid(row=0, column=3)
-            Label(frame, text="PM  10: ").grid(row=1, columnspan=2)
-            Label(frame, text=u"µg/m\u00b3: ").grid(row=1, column=3)
+            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8).grid(row=0, column=0, columnspan=3)
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=6).grid(row=0, column=3)
+            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8).grid(row=1, column=0, columnspan=3)
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"),width=6).grid(row=1, column=3)
             
             self.result_pm25 = DoubleVar()
-            Label(frame, textvariable=self.result_pm25).grid(row=0, column=2)
+            Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=5).grid(row=0, column=2)
 
             self.result_pm10 = DoubleVar()
-            Label(frame, textvariable=self.result_pm10).grid(row=1, column=2)
+            Label(frame, textvariable=self.result_pm10, font=("Courier",10, "normal"), width=5).grid(row=1, column=2)
 
             button0 = Button(frame, text="Start", command=self.sensor_wake)
             button0.grid(row=2, column=0)
@@ -66,7 +66,7 @@ class App:
             self.ax.grid(True)
             self.ax.set_title("PM2.5 and PM10")
             self.ax.set_xlabel("Time (seconds)")
-            self.ax.set_ylabel("PM (ug/m^3)")
+            self.ax.set_ylabel(u"PM (ug/m\u00b3)")
             self.ax.axis([0,300,0,60])
             
         # 0xAA, 0xB4, 0x06, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x06, 0xAB
