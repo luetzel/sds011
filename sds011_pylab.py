@@ -5,13 +5,15 @@
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.3.0
+# Version:  1.4.0
 # License:  GPL 3.0
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:  Store data without simplekml module
 #           Draw lines instead of placemarks
-# Credits:  http://raspberryblog.de  
-#           https://github.com/custom-build-robots/Feinstaubsensor
+#           Improved user Interface
+#           Auto sample time set to 600 seconds     
+# Credits:  http://raspberryblog.de
+#           c't Magazine, Issue 01/2018, https://github.com/custom-build-robots/Feinstaubsensor
 # TODO:     Add datetime to UI 
 #
 
@@ -33,10 +35,10 @@ ser.flushInput()
 # setting the global variable
 gpsd = None
 
-# path to log files
+# set path to data files
 username = getpass.getuser()
 datafile = "/home/" + username + "/data.csv"
-kmlpath = "/home/" + username + "/"
+kmlpath = "/home/" + username + "/kmldata/"
 
 # requires gpsd /dev/ttyACM0 running in background
 class GpsPoller(threading.Thread):
@@ -58,58 +60,68 @@ class GpsPoller(threading.Thread):
 
 class App:
         def __init__(self, master):
-
+            # -- general settings and global variables --
+            
+            # sample time in "Auto" mode 
+            global sampletime, intervall
+            sampletime = 600
+            intervall = 30
+            
+            # -- end of general settings --
+            
             # generate UI
             frame = Frame(master)
             frame.pack()
             
-            Label(frame, text="Lat: ").grid(row=0, column=0)
-            Label(frame, text="Lon: ").grid(row=1, column=0)
+            Label(frame, text="Lat: ", font=("Courier",10, "bold"), width=5).grid(row=0, column=0, columnspan=2)
+            Label(frame, text="Lon: ", font=("Courier",10, "bold"), width=5).grid(row=1, column=0, columnspan=2)
             
             self.latitude = DoubleVar()
-            Label(frame, textvariable=self.latitude).grid(row=0, column=1)
+            Label(frame, textvariable=self.latitude,font=("Courier",10, "normal")).grid(row=0, column=1, columnspan=2)
             self.longitude = DoubleVar()
-            Label(frame, textvariable=self.longitude).grid(row=1, column=1)
+            Label(frame, textvariable=self.longitude,font=("Courier",10, "normal")).grid(row=1, column=1, columnspan=2)
             
-            Label(frame, text="PM 2.5: ").grid(row=0, column=2)
-            Label(frame, text="PM  10: ").grid(row=1, column=2)
-            
-            Label(frame, text="µg/m^3: ").grid(row=0, column=4)
-            Label(frame, text="µg/m^3: ").grid(row=1, column=4)
+            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8).grid(row=0, column=3, columnspan=2)
+            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8).grid(row=1, column=3, columnspan=2)
             
             self.result_pm25 = DoubleVar()
-            Label(frame, textvariable=self.result_pm25).grid(row=0, column=3)
+            Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=8).grid(row=0, column=4, columnspan=2)
 
             self.result_pm10 = DoubleVar()
-            Label(frame, textvariable=self.result_pm10).grid(row=1, column=3)
+            Label(frame, textvariable=self.result_pm10, font=("Courier",10, "normal"), width=8).grid(row=1, column=4, columnspan=2)
+            
+            
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=0, column=5, columnspan=2)
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=1, column=5, columnspan=2)
+            
             
             if (self.is_running("gpsd") == True):
-                Label(frame, text=" GPSD ON", fg="green").grid(row=0, column=5)
+                Label(frame, text=" GPS: ON", fg="green", font=("Courier",10, "bold")).grid(row=0, rowspan=3,column=8)
             elif (self.is_running("gpsd") == False):
-                Label(frame, text=" GPSD OFF", fg="red").grid(row=0, column=5)
+                Label(frame, text=" GPS: OFF", fg="red", font=("Courier",10, "bold")).grid(row=0, rowspan=3, column=8)
 
-            button0 = Button(frame, text="Start", command=self.sensor_wake)
-            button0.grid(row=4, column=0)
+            button0 = Button(frame, text="Start", bg="green", fg="white", font=("Courier",10, "bold") , command=self.sensor_wake)
+            button0.grid(row=4, column=2)
 
-            button1 = Button(frame, text="Sleep", command=self.sensor_sleep)
-            button1.grid(row=4, column=1)
+            button1 = Button(frame, text="Sleep", bg="red", fg="white", font=("Courier",10, "bold"), command=self.sensor_sleep)
+            button1.grid(row=4, column=3)
 
-            button2 = Button(frame, text="Read", command=self.single_read)
-            button2.grid(row=4, column=2)
+            button2 = Button(frame, text="Read", bg="orange", fg="white", font=("Courier",10, "bold"), command=self.single_read)
+            button2.grid(row=4, column=4)
 
-            button3 = Button(frame, text="Auto", command=self.sensor_live)
-            button3.grid(row=4, column=3)
+            button3 = Button(frame, text="Auto", bg="brown", fg="white", font=("Courier",10, "bold"), command=self.sensor_live)
+            button3.grid(row=4, column=5)
 
-            button4 = Button(frame, text="Quit", command=self.quit)
-            button4.grid(row=4, column=4)
+            button4 = Button(frame, text="Quit", bg="blue", fg="white", font=("Courier",10, "bold"), command=self.quit)
+            button4.grid(row=4, column=6)
 
             #Label(frame, text="").grid(row=3, column=3)
 
-            fig = pylab.Figure()
+            fig = pylab.figure(dpi=68, facecolor='w', edgecolor='k')
             self.canvas = FigureCanvasTkAgg(fig, master=master)
             self.canvas.show()
             self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-            self.ax = fig.add_subplot(1,1,1) # 1st subplot 1x1 grid
+            self.ax = fig.add_subplot(111) # 1st subplot 1x1 grid
             self.clear_plot()
             self.plot = False
             
@@ -239,8 +251,8 @@ class App:
             self.write_kml_file(fname25_line, "25")
             self.write_kml_file(fname10_line, "10")
             
-            # sample each 30 s for 5 min
-            for i in range(0, 330, 30):
+            # sample each 30 s for 10 min
+            for i in range(0, sampletime + intervall, intervall):
                 self.sensor_wake()
                 time.sleep(10)
                 # get data from sensor
@@ -314,8 +326,8 @@ class App:
                 self.ax.grid(True)
                 self.ax.set_title("PM2.5 and PM10")
                 self.ax.set_xlabel("Time (seconds)")
-                self.ax.set_ylabel("PM (ug/m^3)")
-                self.ax.axis([0,300,0,60])
+                self.ax.set_ylabel(u"PM (µg/m\u00b3)")
+                self.ax.axis([0,sampletime,0,60])
                 self.canvas.draw()
 
         def quit(self):
