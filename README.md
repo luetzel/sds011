@@ -31,6 +31,12 @@ During data recording, a live plot PM2.5/PM10 is generated in a mathplotlib wind
 
 ![Image](https://github.com/luetzel/sds011/blob/googlemaps/screenshot1.png)
 
+## Branches
+The Python skript of the master branch provides only basic functionality and does not support
+GPS. Both, the gpsdata and the googlemaps branch require a GPS mouse attached to your Pi.
+The gpsdata branch depends on the simplekml Python module and represents sensor data
+as placemarks. The googlemaps branch interconnects placemarks with colored lines.
+
 For storing geographical data, I attached an (optional) NEO6 ublox GPS device to my Raspberry Pi.
  When a GPS signals is available, the script generates a KML file which can be imported to Google Maps
 and/or GoogleEarth.
