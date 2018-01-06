@@ -2,19 +2,24 @@
 # -*- coding: utf-8 -*-
 #
 # Author:   Dr. M. Luetzelberger
+# Email:    webmaster_at_raspberryblog.de
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.4.0
+# Version:  1.5.0
 # License:  GPL 3.0
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:  Store data without simplekml module
 #           Draw lines instead of placemarks
 #           Improved user Interface
-#           Auto sample time set to 600 seconds     
+#           Auto sample time set to 600 second
+#           New button to shutdown Pi
+#           New button to delete old data files
+#
 # Credits:  http://raspberryblog.de
+#
 #           c't Magazine, Issue 01/2018, https://github.com/custom-build-robots/Feinstaubsensor
-# TODO:     Add datetime to UI 
+# TODO:     Add datetime to UI
 #
 
 from __future__ import print_function
@@ -37,7 +42,7 @@ gpsd = None
 
 # set path to data files
 username = getpass.getuser()
-datafile = "/home/" + username + "/data.csv"
+datafile = "/home/" + username + "/kmldata/data.csv"
 kmlpath = "/home/" + username + "/kmldata/"
 
 # requires gpsd /dev/ttyACM0 running in background
@@ -81,39 +86,42 @@ class App:
             self.longitude = DoubleVar()
             Label(frame, textvariable=self.longitude,font=("Courier",10, "normal")).grid(row=1, column=1, columnspan=2)
             
-            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8, fg="red").grid(row=0, column=3, columnspan=2)
-            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8, fg="blue").grid(row=1, column=3, columnspan=2)
+            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8, fg="red").grid(row=0, column=2, columnspan=2)
+            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8, fg="blue").grid(row=1, column=2, columnspan=2)
             
             self.result_pm25 = DoubleVar()
-            Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=8).grid(row=0, column=4, columnspan=2)
+            Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=8).grid(row=0, column=3, columnspan=2)
 
             self.result_pm10 = DoubleVar()
-            Label(frame, textvariable=self.result_pm10, font=("Courier",10, "normal"), width=8).grid(row=1, column=4, columnspan=2)
+            Label(frame, textvariable=self.result_pm10, font=("Courier",10, "normal"), width=8).grid(row=1, column=3, columnspan=2)
             
             
-            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=0, column=5, columnspan=2)
-            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=1, column=5, columnspan=2)
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=0, column=4, columnspan=2)
+            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=1, column=4, columnspan=2)
             
             
             if (self.is_running("gpsd") == True):
-                Label(frame, text=" GPS: ON", fg="green", font=("Courier",10, "bold")).grid(row=0, rowspan=3,column=8)
+                Label(frame, text=" GPS: On", fg="green", font=("Courier",10, "bold")).grid(row=0, rowspan=3,column=6, columnspan=2)
             elif (self.is_running("gpsd") == False):
-                Label(frame, text=" GPS: OFF", fg="red", font=("Courier",10, "bold")).grid(row=0, rowspan=3, column=8)
+                Label(frame, text=" GPS: Off", fg="red", font=("Courier",10, "bold")).grid(row=0, rowspan=3, column=6, columnspan=2)
 
-            button0 = Button(frame, text="Start", bg="green", fg="white", font=("Courier",10, "bold") , command=self.sensor_wake)
-            button0.grid(row=4, column=2)
+            button0 = Button(frame, text="WakeUp", bg="green", fg="white", font=("Courier",10, "bold") , command=self.sensor_wake)
+            button0.grid(row=4, column=1)
 
             button1 = Button(frame, text="Sleep", bg="red", fg="white", font=("Courier",10, "bold"), command=self.sensor_sleep)
-            button1.grid(row=4, column=3)
+            button1.grid(row=4, column=2)
 
             button2 = Button(frame, text="Read", bg="orange", fg="white", font=("Courier",10, "bold"), command=self.single_read)
-            button2.grid(row=4, column=4)
+            button2.grid(row=4, column=3)
 
             button3 = Button(frame, text="Auto", bg="brown", fg="white", font=("Courier",10, "bold"), command=self.sensor_live)
-            button3.grid(row=4, column=5)
+            button3.grid(row=4, column=4)
 
-            button4 = Button(frame, text="Quit", bg="blue", fg="white", font=("Courier",10, "bold"), command=self.quit)
-            button4.grid(row=4, column=6)
+            button4 = Button(frame, text="Delete", bg="blue", fg="white", font=("Courier",10, "bold"), command=self.delete)
+            button4.grid(row=4, column=5)
+
+	    button5 = Button(frame, text="Quit", bg="purple", fg="white", font=("Courier",10, "bold"), command=self.quit)
+            button5.grid(row=4, column=6)
 
             #Label(frame, text="").grid(row=3, column=3)
 
@@ -195,8 +203,8 @@ class App:
             gps_time = gpsd.utc
 
             # print data on display
-            self.latitude.set(str(latitude)[:6])
-            self.longitude.set(str(longitude)[:6])
+            self.latitude.set(str(latitude)[:5])
+            self.longitude.set(str(longitude)[:5])
             self.result_pm25.set(pm25)
             self.result_pm10.set(pm10)
 
@@ -258,7 +266,7 @@ class App:
                 # get data from sensor
                 data = self.sensor_read()
 
-            # plot data on display    
+            # plot data on display
                 if data is not None:
                     x.append(i)
                     y1.append(data[0])
@@ -274,7 +282,7 @@ class App:
                     if lat_old == "initial":
                         lat_old = data[3]
 
-                    if lon_old == "initial":    
+                    if lon_old == "initial":
                         lon_old = data[2]
                     
                     color_25 = self.color_selection(data[0])
@@ -331,7 +339,27 @@ class App:
                 self.canvas.draw()
 
         def quit(self):
-            root.destroy()
+	    root.withdraw()
+            var = tkMessageBox.askyesno("Shutdown", "Do you really want to quit?")
+            if var == False:
+                root.deiconify()
+                root.update()
+            else:
+                self.sensor_sleep()
+                root.destroy()
+		os.system("sudo shutdown now -h")
+
+	def delete(self):
+            root.withdraw()
+            var = tkMessageBox.askyesno("Delete", "Do you really want to delete all old data files?")
+            if var == False:
+                root.deiconify()
+                root.update()
+            else:
+                self.sensor_sleep()
+                root.deiconify()
+		root.update()
+                os.system("sudo rm -rf /home/pi/kmldata/*")
             
         def color_selection(self, value):
             # red
@@ -401,7 +429,7 @@ try:
     root = Tk()
     root.wm_title("SDS011 PM Sensor")
     # hide window decoration
-    #root.overrideredirect(True)
+    root.overrideredirect(True)
     app = App(root)
     root.geometry("480x320+0+0")
     root.mainloop()

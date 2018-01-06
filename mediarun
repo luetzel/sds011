@@ -1,0 +1,9 @@
+#!/bin/bash
+# /usr/local/bin/mediarun - runs on insert of drive
+case "$ACTION" in
+  add)
+    mount -t vfat /dev/sda1 -o rw,exec /media/data
+    cp -R /home/pi/kmldata /media/data/.
+    umount /dev/sda1
+    ;;
+esac

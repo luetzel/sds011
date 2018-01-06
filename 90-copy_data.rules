@@ -1,0 +1,1 @@
+KERNEL=="sda1",ACTION=="*",ATTRS{removable}=="1",RUN="/usr/local/bin/mediarun"
