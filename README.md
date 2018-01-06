@@ -104,6 +104,10 @@ fudge 127.127.28.1 refid GPSp
                 Created udev.rule and python script
                 to disable fan/ diode on USB connection
 * 2017-12-28    Small bugfixes, UI improvements
+* 2018-01-06    New udev rule for copying data to USB flash drive
+		New UI button to delete old data files
+		Data files are saved in /home/pi/kmldata
+		Quit button now used for Pi shutdown
 
 ## Todo
 
