@@ -405,8 +405,8 @@ class App:
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
             # dummy values for debugging
-            latitude = 52.12345
-            longitude = 11.12345
+            #latitude = 52.12345
+            #longitude = 11.12345
             # print data on display
             self.latitude.set(str(latitude)[:8])
             self.longitude.set(str(longitude)[:8])
