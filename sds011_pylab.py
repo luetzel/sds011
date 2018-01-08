@@ -83,19 +83,19 @@ class App:
             frame = Frame(master)
             frame.pack()
             
-            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=7)
+            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=5)
             label0.grid(row=0, column=0, columnspan=2)
             
-            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=7)
+            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=5)
             label1.grid(row=1, column=0, columnspan=2)
             
             self.latitude = DoubleVar()
             label2 = Label(frame, textvariable=self.latitude,font=(displayfont,fontsize, "normal"))
-            label2.grid(row=0, column=2, columnspan=2)
+            label2.grid(row=0, column=1, columnspan=2)
             
             self.longitude = DoubleVar()
             label3 = Label(frame, textvariable=self.longitude,font=(displayfont,fontsize, "normal"))
-            label3.grid(row=1, column=2, columnspan=2)
+            label3.grid(row=1, column=1, columnspan=2)
             
             label4 = Label(frame, text="PM 2.5: ", font=(displayfont,fontsize, "bold"), width=8, fg="red")
             label4.grid(row=0, column=3, columnspan=2)
