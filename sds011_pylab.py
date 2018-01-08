@@ -83,10 +83,10 @@ class App:
             frame = Frame(master)
             frame.pack()
             
-            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=5)
+            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=7)
             label0.grid(row=0, column=0, columnspan=2)
             
-            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=5)
+            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=7)
             label1.grid(row=1, column=0, columnspan=2)
             
             self.latitude = DoubleVar()
@@ -386,10 +386,13 @@ class App:
             if 50 <= value <= 2000:
                 color = "#641400F0"
             # orange
-            elif 25 <= value <= 49:
+            elif 25 <= value < 50:
                 color = "#641478FF"
+            #yellow    
+            elif 10 <= value < 25:
+                color = "#FFFF0014"
             # green
-            elif 0 <= value < 25:
+            elif 0 <= value < 10:
                 color = "#64009614"     
             return color
 
@@ -403,8 +406,8 @@ class App:
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
             # print data on display
-            self.latitude.set(str(latitude)[:5])
-            self.longitude.set(str(longitude)[:5])
+            self.latitude.set(str(latitude)[:7])
+            self.longitude.set(str(longitude)[:7])
             # update time and position each 1000 ms
             self.clock.after(1000, self.tick)
 
