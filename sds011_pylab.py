@@ -98,24 +98,24 @@ class App:
             label3.grid(row=1, column=1, columnspan=2)
             
             label4 = Label(frame, text="PM 2.5: ", font=(displayfont,fontsize, "bold"), width=8, fg="red")
-            label4.grid(row=0, column=3, columnspan=2)
+            label4.grid(row=0, column=2, columnspan=2)
             
             label5 = Label(frame, text="PM  10: ", font=(displayfont,fontsize, "bold"), width=8, fg="blue")
-            label5.grid(row=1, column=3, columnspan=2)
+            label5.grid(row=1, column=2, columnspan=2)
             
             self.result_pm25 = DoubleVar()
             label6 = Label(frame, textvariable=self.result_pm25, font=(displayfont,fontsize, "normal"), width=8)
-            label6.grid(row=0, column=4, columnspan=2)
+            label6.grid(row=0, column=3, columnspan=2)
 
             self.result_pm10 = DoubleVar()
             label7 = Label(frame, textvariable=self.result_pm10, font=(displayfont,fontsize,"normal"), width=8)
-            label7.grid(row=1, column=4, columnspan=2)
+            label7.grid(row=1, column=3, columnspan=2)
             
             label8 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label8.grid(row=0, column=5, columnspan=2)
+            label8.grid(row=0, column=4, columnspan=2)
             
             label9 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label9.grid(row=1, column=5, columnspan=2)
+            label9.grid(row=1, column=4, columnspan=2)
             
             self.clock = Label(frame, font=(displayfont,fontsize,'bold'), width=10)
             self.clock.grid(row=0, column=6, columnspan=2)
