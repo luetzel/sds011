@@ -83,67 +83,66 @@ class App:
             frame = Frame(master)
             frame.pack()
             
-            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=5)
-            label0.grid(row=0, column=0, columnspan=2)
+            label0 = Label(frame, text="Lat:", font=(displayfont,fontsize, "bold"), width=4)
+            label0.grid(row=0, column=0, columnspan=1, sticky='EW')
             
-            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=5)
-            label1.grid(row=1, column=0, columnspan=2)
+            label1 = Label(frame, text="Lon:", font=(displayfont,fontsize, "bold"), width=4)
+            label1.grid(row=1, column=0, columnspan=1, sticky='EW')
             
             self.latitude = DoubleVar()
-            label2 = Label(frame, textvariable=self.latitude,font=(displayfont,fontsize, "normal"))
-            label2.grid(row=0, column=1, columnspan=2)
+            label2 = Label(frame, textvariable=self.latitude,font=(displayfont,fontsize, "normal"), width=8)
+            label2.grid(row=0, column=1, columnspan=1, sticky='W')
             
             self.longitude = DoubleVar()
-            label3 = Label(frame, textvariable=self.longitude,font=(displayfont,fontsize, "normal"))
-            label3.grid(row=1, column=1, columnspan=2)
+            label3 = Label(frame, textvariable=self.longitude,font=(displayfont,fontsize, "normal"),width=8)
+            label3.grid(row=1, column=1, columnspan=1, sticky='W')
             
-            label4 = Label(frame, text="PM 2.5: ", font=(displayfont,fontsize, "bold"), width=8, fg="red")
-            label4.grid(row=0, column=2, columnspan=2)
+            label4 = Label(frame, text=" PM 2.5:", font=(displayfont,fontsize, "bold"), width=8, fg="red")
+            label4.grid(row=0, column=2, columnspan=1, sticky='W')
             
-            label5 = Label(frame, text="PM  10: ", font=(displayfont,fontsize, "bold"), width=8, fg="blue")
-            label5.grid(row=1, column=2, columnspan=2)
+            label5 = Label(frame, text=" PM  10:", font=(displayfont,fontsize, "bold"), width=8, fg="blue")
+            label5.grid(row=1, column=2, columnspan=1, sticky='W')
             
             self.result_pm25 = DoubleVar()
-            label6 = Label(frame, textvariable=self.result_pm25, font=(displayfont,fontsize, "normal"), width=8)
-            label6.grid(row=0, column=3, columnspan=2)
+            label6 = Label(frame, textvariable=self.result_pm25,font=(displayfont,fontsize, "normal"), width=3)
+            label6.grid(row=0, column=3, columnspan=1, sticky='EW')
 
             self.result_pm10 = DoubleVar()
-            label7 = Label(frame, textvariable=self.result_pm10, font=(displayfont,fontsize,"normal"), width=8)
-            label7.grid(row=1, column=3, columnspan=2)
+            label7 = Label(frame, textvariable=self.result_pm10, font=(displayfont,fontsize,"normal"), width=3)
+            label7.grid(row=1, column=3, columnspan=1, sticky='EW')
             
-            label8 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label8.grid(row=0, column=4, columnspan=2)
+            label8 = Label(frame, text=u"µg/m\u00b3", font=(displayfont,fontsize, "bold"), width=4, fg="red")
+            label8.grid(row=0, column=4, columnspan=1, sticky='EW')
             
-            label9 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label9.grid(row=1, column=4, columnspan=2)
+            label9 = Label(frame, text=u"µg/m\u00b3", font=(displayfont,fontsize, "bold"), width=4, fg="blue")
+            label9.grid(row=1, column=4, columnspan=1, sticky='EW')
             
             self.clock = Label(frame, font=(displayfont,fontsize,'bold'), width=10)
-            self.clock.grid(row=0, column=6, columnspan=2)
+            self.clock.grid(row=0, column=5, columnspan=1, sticky='W')
             
             if (self.is_running("gpsd") == True):
-                Label(frame, text=" GPS: On", fg="green", font=(displayfont,fontsize,"bold")).grid(row=1, column=6,columnspan=2)
+                Label(frame, text=" GPS: On  ", fg="green", font=(displayfont,fontsize,"bold"), width=10).grid(row=1, column=5,columnspan=1, sticky='W')
             elif (self.is_running("gpsd") == False):
-                Label(frame, text=" GPS: Off", fg="red", font=(displayfont,fontsize,"bold")).grid(row=1, column=6,columnspan=2)
+                Label(frame, text=" GPS: Off", fg="red", font=(displayfont,fontsize,"bold"), width=10).grid(row=1, column=5,columnspan=1, sticky='W')
 
             button0 = Button(frame, text="WakeUp", bg="green", fg="white", font=(displayfont,fontsize,"bold"),command=self.sensor_wake)
-            button0.grid(row=4, column=1)
+            button0.grid(row=4, column=0, sticky='EW')
 
             button1 = Button(frame, text="Sleep", bg="red", fg="white", font=(displayfont,fontsize,"bold"), command=self.sensor_sleep)
-            button1.grid(row=4, column=2)
+            button1.grid(row=4, column=1, sticky='EW')
 
             button2 = Button(frame, text="Read", bg="orange", fg="white", font=(displayfont,fontsize,"bold"), command=self.single_read)
-            button2.grid(row=4, column=3)
+            button2.grid(row=4, column=2, sticky='EW')
 
             button3 = Button(frame, text="Auto", bg="brown", fg="white", font=(displayfont,fontsize,"bold"), command=self.sensor_live)
-            button3.grid(row=4, column=4)
+            button3.grid(row=4, column=3, sticky='EW')
 
             button4 = Button(frame, text="Delete", bg="blue", fg="white", font=(displayfont,fontsize,"bold"), command=self.delete)
-            button4.grid(row=4, column=5)
+            button4.grid(row=4, column=4, sticky='EW')
 
             button5 = Button(frame, text="Quit", bg="purple", fg="white", font=(displayfont,fontsize,"bold"), command=self.quit)
-            button5.grid(row=4, column=6)
+            button5.grid(row=4, column=5, sticky='EW')
 
-            #Label(frame, text="").grid(row=3, column=3)
             fig = pylab.figure(dpi=68, facecolor='w', edgecolor='k')
             self.canvas = FigureCanvasTkAgg(fig, master=master)
             self.canvas.show()
@@ -222,8 +221,8 @@ class App:
             gps_time = gpsd.utc
 
             # print data on display
-            self.latitude.set(str(latitude)[:5])
-            self.longitude.set(str(longitude)[:5])
+            self.latitude.set(str(latitude)[:8])
+            self.longitude.set(str(longitude)[:8])
             self.result_pm25.set(pm25)
             self.result_pm10.set(pm10)
 
@@ -405,9 +404,12 @@ class App:
             # get the current position from gpsd
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
+            # dummy values for debugging
+            latitude = 52.12345
+            longitude = 11.12345
             # print data on display
-            self.latitude.set(str(latitude)[:7])
-            self.longitude.set(str(longitude)[:7])
+            self.latitude.set(str(latitude)[:8])
+            self.longitude.set(str(longitude)[:8])
             # update time and position each 1000 ms
             self.clock.after(1000, self.tick)
 
