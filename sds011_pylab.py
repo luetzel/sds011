@@ -91,31 +91,31 @@ class App:
             
             self.latitude = DoubleVar()
             label2 = Label(frame, textvariable=self.latitude,font=(displayfont,fontsize, "normal"))
-            label2.grid(row=0, column=1, columnspan=2)
+            label2.grid(row=0, column=2, columnspan=2)
             
             self.longitude = DoubleVar()
             label3 = Label(frame, textvariable=self.longitude,font=(displayfont,fontsize, "normal"))
-            label3.grid(row=1, column=1, columnspan=2)
+            label3.grid(row=1, column=2, columnspan=2)
             
             label4 = Label(frame, text="PM 2.5: ", font=(displayfont,fontsize, "bold"), width=8, fg="red")
-            label4.grid(row=0, column=2, columnspan=2)
+            label4.grid(row=0, column=3, columnspan=2)
             
             label5 = Label(frame, text="PM  10: ", font=(displayfont,fontsize, "bold"), width=8, fg="blue")
-            label5.grid(row=1, column=2, columnspan=2)
+            label5.grid(row=1, column=3, columnspan=2)
             
             self.result_pm25 = DoubleVar()
             label6 = Label(frame, textvariable=self.result_pm25, font=(displayfont,fontsize, "normal"), width=8)
-            label6.grid(row=0, column=3, columnspan=2)
+            label6.grid(row=0, column=4, columnspan=2)
 
             self.result_pm10 = DoubleVar()
             label7 = Label(frame, textvariable=self.result_pm10, font=(displayfont,fontsize,"normal"), width=8)
-            label7.grid(row=1, column=3, columnspan=2)
+            label7.grid(row=1, column=4, columnspan=2)
             
             label8 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label8.grid(row=0, column=4, columnspan=2)
+            label8.grid(row=0, column=5, columnspan=2)
             
             label9 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
-            label9.grid(row=1, column=4, columnspan=2)
+            label9.grid(row=1, column=5, columnspan=2)
             
             self.clock = Label(frame, font=(displayfont,fontsize,'bold'), width=10)
             self.clock.grid(row=0, column=6, columnspan=2)
@@ -382,18 +382,18 @@ class App:
             
         def color_selection(self, value):
             # red
-            color = "#64009614" 
+            color = "#00aa00" 
             if 50 <= value <= 2000:
-                color = "#641400F0"
+                color = "#ff0000"
             # orange
             elif 25 <= value < 50:
-                color = "#641478FF"
+                color = "#ffaa00"
             #yellow    
             elif 10 <= value < 25:
-                color = "#FFFF0014"
+                color = "#ffff00"
             # green
             elif 0 <= value < 10:
-                color = "#64009614"     
+                color = "#00aa00"     
             return color
 
         def tick(self):
