@@ -6,27 +6,31 @@
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.5.0
+# Version:  1.6.0
 # License:  GPL 3.0
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:  Store data without simplekml module
 #           Draw lines instead of placemarks
 #           Improved user Interface
-#           Auto sample time set to 600 second
-#           New button to shutdown Pi
-#           New button to delete old data files
-#
+#           Auto sampling time set to 600 seconds
+#           New UI button to shutdown Pi
+#           New UI button to delete old data files
+#           Add clock to UI
+#           Auto update GPS position
+#                  
 # Credits:  http://raspberryblog.de
-#
-#           c't Magazine, Issue 01/2018, https://github.com/custom-build-robots/Feinstaubsensor
-# TODO:     Add datetime to UI
+#           http://koepfchenstattkohle.org
+#           http://edulabs.de
+#           c't Make Magazine, Issue 01/2017
+#           c't Magazine, Issue 01/2018
+#           Ingmar Stapel https://github.com/custom-build-robots/Feinstaubsensor
 #
 
 from __future__ import print_function
 from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess
+import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime
 
 # open serial port
 ser = serial.Serial()
@@ -71,60 +75,75 @@ class App:
             global sampletime, intervall
             sampletime = 600
             intervall = 30
-            
+            displayfont = "Courier"
+            fontsize = 10
             # -- end of general settings --
             
             # generate UI
             frame = Frame(master)
             frame.pack()
             
-            Label(frame, text="Lat: ", font=("Courier",10, "bold"), width=5).grid(row=0, column=0, columnspan=2)
-            Label(frame, text="Lon: ", font=("Courier",10, "bold"), width=5).grid(row=1, column=0, columnspan=2)
+            label0 = Label(frame, text="Lat: ", font=(displayfont,fontsize, "bold"), width=5)
+            label0.grid(row=0, column=0, columnspan=2)
+            
+            label1 = Label(frame, text="Lon: ", font=(displayfont,fontsize, "bold"), width=5)
+            label1.grid(row=1, column=0, columnspan=2)
             
             self.latitude = DoubleVar()
-            Label(frame, textvariable=self.latitude,font=("Courier",10, "normal")).grid(row=0, column=1, columnspan=2)
-            self.longitude = DoubleVar()
-            Label(frame, textvariable=self.longitude,font=("Courier",10, "normal")).grid(row=1, column=1, columnspan=2)
+            label2 = Label(frame, textvariable=self.latitude,font=(displayfont,fontsize, "normal"))
+            label2.grid(row=0, column=1, columnspan=2)
             
-            Label(frame, text="PM 2.5: ", font=("Courier",10, "bold"), width=8, fg="red").grid(row=0, column=2, columnspan=2)
-            Label(frame, text="PM  10: ", font=("Courier",10, "bold"), width=8, fg="blue").grid(row=1, column=2, columnspan=2)
+            self.longitude = DoubleVar()
+            label3 = Label(frame, textvariable=self.longitude,font=(displayfont,fontsize, "normal"))
+            label3.grid(row=1, column=1, columnspan=2)
+            
+            label4 = Label(frame, text="PM 2.5: ", font=(displayfont,fontsize, "bold"), width=8, fg="red")
+            label4.grid(row=0, column=2, columnspan=2)
+            
+            label5 = Label(frame, text="PM  10: ", font=(displayfont,fontsize, "bold"), width=8, fg="blue")
+            label5.grid(row=1, column=2, columnspan=2)
             
             self.result_pm25 = DoubleVar()
-            Label(frame, textvariable=self.result_pm25, font=("Courier",10, "normal"), width=8).grid(row=0, column=3, columnspan=2)
+            label6 = Label(frame, textvariable=self.result_pm25, font=(displayfont,fontsize, "normal"), width=8)
+            label6.grid(row=0, column=3, columnspan=2)
 
             self.result_pm10 = DoubleVar()
-            Label(frame, textvariable=self.result_pm10, font=("Courier",10, "normal"), width=8).grid(row=1, column=3, columnspan=2)
+            label7 = Label(frame, textvariable=self.result_pm10, font=(displayfont,fontsize,"normal"), width=8)
+            label7.grid(row=1, column=3, columnspan=2)
             
+            label8 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
+            label8.grid(row=0, column=4, columnspan=2)
             
-            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=0, column=4, columnspan=2)
-            Label(frame, text=u"µg/m\u00b3 ", font=("Courier",10, "bold"), width=8).grid(row=1, column=4, columnspan=2)
+            label9 = Label(frame, text=u"µg/m\u00b3 ", font=(displayfont,fontsize,"bold"), width=8)
+            label9.grid(row=1, column=4, columnspan=2)
             
+            self.clock = Label(frame, font=(displayfont,fontsize,'bold'), width=10)
+            self.clock.grid(row=0, column=6, columnspan=2)
             
             if (self.is_running("gpsd") == True):
-                Label(frame, text=" GPS: On", fg="green", font=("Courier",10, "bold")).grid(row=0, rowspan=3,column=6, columnspan=2)
+                Label(frame, text=" GPS: On", fg="green", font=(displayfont,fontsize,"bold")).grid(row=1, column=6,columnspan=2)
             elif (self.is_running("gpsd") == False):
-                Label(frame, text=" GPS: Off", fg="red", font=("Courier",10, "bold")).grid(row=0, rowspan=3, column=6, columnspan=2)
+                Label(frame, text=" GPS: Off", fg="red", font=(displayfont,fontsize,"bold")).grid(row=1, column=6,columnspan=2)
 
-            button0 = Button(frame, text="WakeUp", bg="green", fg="white", font=("Courier",10, "bold") , command=self.sensor_wake)
+            button0 = Button(frame, text="WakeUp", bg="green", fg="white", font=(displayfont,fontsize,"bold"),command=self.sensor_wake)
             button0.grid(row=4, column=1)
 
-            button1 = Button(frame, text="Sleep", bg="red", fg="white", font=("Courier",10, "bold"), command=self.sensor_sleep)
+            button1 = Button(frame, text="Sleep", bg="red", fg="white", font=(displayfont,fontsize,"bold"), command=self.sensor_sleep)
             button1.grid(row=4, column=2)
 
-            button2 = Button(frame, text="Read", bg="orange", fg="white", font=("Courier",10, "bold"), command=self.single_read)
+            button2 = Button(frame, text="Read", bg="orange", fg="white", font=(displayfont,fontsize,"bold"), command=self.single_read)
             button2.grid(row=4, column=3)
 
-            button3 = Button(frame, text="Auto", bg="brown", fg="white", font=("Courier",10, "bold"), command=self.sensor_live)
+            button3 = Button(frame, text="Auto", bg="brown", fg="white", font=(displayfont,fontsize,"bold"), command=self.sensor_live)
             button3.grid(row=4, column=4)
 
-            button4 = Button(frame, text="Delete", bg="blue", fg="white", font=("Courier",10, "bold"), command=self.delete)
+            button4 = Button(frame, text="Delete", bg="blue", fg="white", font=(displayfont,fontsize,"bold"), command=self.delete)
             button4.grid(row=4, column=5)
 
-	    button5 = Button(frame, text="Quit", bg="purple", fg="white", font=("Courier",10, "bold"), command=self.quit)
+            button5 = Button(frame, text="Quit", bg="purple", fg="white", font=(displayfont,fontsize,"bold"), command=self.quit)
             button5.grid(row=4, column=6)
 
             #Label(frame, text="").grid(row=3, column=3)
-
             fig = pylab.figure(dpi=68, facecolor='w', edgecolor='k')
             self.canvas = FigureCanvasTkAgg(fig, master=master)
             self.canvas.show()
@@ -339,7 +358,7 @@ class App:
                 self.canvas.draw()
 
         def quit(self):
-	    root.withdraw()
+            root.withdraw()
             var = tkMessageBox.askyesno("Shutdown", "Do you really want to quit?")
             if var == False:
                 root.deiconify()
@@ -347,9 +366,9 @@ class App:
             else:
                 self.sensor_sleep()
                 root.destroy()
-		os.system("sudo shutdown now -h")
+                os.system("sudo shutdown now -h")
 
-	def delete(self):
+        def delete(self):
             root.withdraw()
             var = tkMessageBox.askyesno("Delete", "Do you really want to delete all old data files?")
             if var == False:
@@ -358,7 +377,7 @@ class App:
             else:
                 self.sensor_sleep()
                 root.deiconify()
-		root.update()
+                root.update()
                 os.system("sudo rm -rf /home/pi/kmldata/*")
             
         def color_selection(self, value):
@@ -373,6 +392,21 @@ class App:
             elif 0 <= value < 25:
                 color = "#64009614"     
             return color
+
+        def tick(self):
+            # get the current local time from the PC
+            s = time.strftime('%H:%M:%S')
+            # if time string has changed, update it
+            if s != self.clock["text"]:
+                self.clock["text"] = s
+            # get the current position from gpsd
+            latitude = gpsd.fix.latitude
+            longitude = gpsd.fix.longitude
+            # print data on display
+            self.latitude.set(str(latitude)[:5])
+            self.longitude.set(str(longitude)[:5])
+            # update time and position each 1000 ms
+            self.clock.after(1000, self.tick)
 
         def write_kml_line(self, value_pm, value_pm_old, value_lon_old, value_lat_old, value_lat, value_lon, value_time, value_fname, value_color):
            pm = value_pm
@@ -427,11 +461,12 @@ try:
     gpsp = GpsPoller()
     gpsp.start()
     root = Tk()
-    root.wm_title("SDS011 PM Sensor")
+    root.wm_title("SDS011 PM-Sensor")
     # hide window decoration
     root.overrideredirect(True)
     app = App(root)
     root.geometry("480x320+0+0")
+    app.tick()
     root.mainloop()
 
 except (KeyboardInterrupt, SystemExit): #when you press ctrl+c
