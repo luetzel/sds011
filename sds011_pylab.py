@@ -31,7 +31,7 @@ from __future__ import print_function
 from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime
+import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime, commands
 
 # setting the global variable
 gpsd = None
@@ -333,11 +333,11 @@ class App:
                 self.sensor_sleep()
 
         def is_running(self, process):
-                s = subprocess.Popen(["ps","axw"],stdout=subprocess.PIPE)
-                for x in s.stdout:
-                        if re.search(process, x):
-                                return True
-                return False
+                ps = commands.getoutput('ps -A')
+                if 'gpsd' in ps:
+                    return True
+                else:   
+                    return False
 
         def clear_plot(self):
                 self.ax.cla()
