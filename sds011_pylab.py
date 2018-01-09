@@ -333,7 +333,7 @@ class App:
                 self.sensor_sleep()
 
         def is_running(self, process):
-                ps = commands.getoutput('ps -A')
+                ps = commands.getoutput('ps -A | grep gpsd')
                 if 'gpsd' in ps:
                     return True
                 else:   
