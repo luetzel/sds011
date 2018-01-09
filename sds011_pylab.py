@@ -17,6 +17,7 @@
 #           New UI button to delete old data files
 #           Add clock to UI
 #           Auto update GPS position
+#           Error handling
 #                  
 # Credits:  http://raspberryblog.de
 #           http://koepfchenstattkohle.org
@@ -31,15 +32,6 @@ from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime
-
-# open serial port
-ser = serial.Serial()
-#ser.port = sys.argv[1]
-ser.port = "/dev/ttyUSB0"
-ser.baudrate = 9600
-
-ser.open()
-ser.flushInput()
 
 # setting the global variable
 gpsd = None
@@ -373,11 +365,12 @@ class App:
             if var == False:
                 root.deiconify()
                 root.update()
-            else:
                 self.sensor_sleep()
+            elif var == True:
                 root.deiconify()
                 root.update()
                 os.system("sudo rm -rf /home/pi/kmldata/*")
+                self.sensor_sleep()
             
         def color_selection(self, value):
             # red
@@ -463,15 +456,50 @@ class App:
                 file.close()
 
 try:
-    gpsp = GpsPoller()
-    gpsp.start()
+    # generate main window    
     root = Tk()
     root.wm_title("SDS011 PM-Sensor")
+    
     # hide window decoration
     root.overrideredirect(True)
     app = App(root)
     root.geometry("480x320+0+0")
+    
+    # open serial port
+    while True:
+        try:
+            ser = serial.Serial()
+            #ser.port = sys.argv[1]
+            ser.port = "/dev/ttyUSB0"
+            ser.baudrate = 9600
+            ser.open()
+            ser.flushInput()
+            break
+        # Error message in case PM sensor isn't connected
+        except OSError:
+            root.withdraw()
+            tkMessageBox.showerror("Error","Error: PM sensor not connected!")
+            root.deiconify()
+            root.update()
+            
+    # start GPS connection        
+    while True:        
+        try:
+            gpsp = GpsPoller()
+            gpsp.start()
+            break            
+        # Error message in case gpsd not running    
+        except Exception:
+            root.withdraw()
+            tkMessageBox.showerror("Error", "Error: GPS not connected!")
+            root.deiconify()
+            root.update()
+            
+    # start clock        
     app.tick()
+    
+    # start main program
+    app.sensor_sleep()
     root.mainloop()
 
 except (KeyboardInterrupt, SystemExit): #when you press ctrl+c
