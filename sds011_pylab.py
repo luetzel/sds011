@@ -373,19 +373,20 @@ class App:
                 self.sensor_sleep()
             
         def color_selection(self, value):
+            # default
+            color = "#50F00014" 
             # red
-            color = "#00aa00" 
             if 50 <= value <= 2000:
-                color = "#ff0000"
+                color = "#501400FF"
             # orange
             elif 25 <= value < 50:
-                color = "#ffaa00"
+                color = "#5014B4FF"
             #yellow    
             elif 10 <= value < 25:
-                color = "#ffff00"
+                color = "#5014F0FF"
             # green
             elif 0 <= value < 10:
-                color = "#00aa00"     
+                color = "#5014F000"     
             return color
 
         def tick(self):
