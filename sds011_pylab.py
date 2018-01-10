@@ -333,10 +333,11 @@ class App:
                 self.sensor_sleep()
 
         def is_running(self, process):
-                ps = commands.getoutput("ps -A | grep %s" % process )
+                ps = commands.getoutput('ps -A | grep %s' % process )
+                print (ps)
                 if process in ps:
                     return True
-                else:   
+                elif process not in ps:   
                     return False
 
         def clear_plot(self):
