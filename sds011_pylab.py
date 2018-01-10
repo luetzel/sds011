@@ -333,7 +333,7 @@ class App:
                 self.sensor_sleep()
 
         def is_running(self, process):
-                ps = commands.getoutput('ps -A | grep %s' % process )
+                ps = commands.getoutput('ps -A | grep %s' % process ).split()
                 print (ps)
                 if process in ps:
                     return True
@@ -481,8 +481,7 @@ try:
         # Error message in case PM sensor isn't connected
         except OSError:
             root.withdraw()
-            root.update()
-            tkMessageBox.showerror("Error","Error: PM sensor not connected!")
+            var = tkMessageBox.showerror("Error","Error: PM sensor not connected!")
             root.deiconify()
             root.update()
             
@@ -495,8 +494,7 @@ try:
         # Error message in case gpsd not running    
         except Exception:
             root.withdraw()
-            root.update()
-            tkMessageBox.showerror("Error", "Error: GPS not connected!")
+            var = tkMessageBox.showerror("Error", "Error: GPS not connected!")
             root.deiconify()
             root.update()
             
