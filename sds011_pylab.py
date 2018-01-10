@@ -113,9 +113,11 @@ class App:
             self.clock.grid(row=0, column=5, columnspan=1, sticky='W')
             
             if (self.is_running("gpsd") == True):
-                Label(frame, text=" GPS: On  ", fg="green", font=(displayfont,fontsize,"bold"), width=10).grid(row=1, column=5,columnspan=1, sticky='W')
+                self.label10 = Label(frame, text=" GPS: On  ", fg="green", font=(displayfont,fontsize,"bold"), width=10)
+                self.label10.grid(row=1, column=5,columnspan=1, sticky='W')
             elif (self.is_running("gpsd") == False):
-                Label(frame, text=" GPS: Off", fg="red", font=(displayfont,fontsize,"bold"), width=10).grid(row=1, column=5,columnspan=1, sticky='W')
+                self.label10 = Label(frame, text=" GPS: Off", fg="red", font=(displayfont,fontsize,"bold"), width=10)
+                self.label10.grid(row=1, column=5,columnspan=1, sticky='W')
 
             button0 = Button(frame, text="WakeUp", bg="green", fg="white", font=(displayfont,fontsize,"bold"),command=self.sensor_wake)
             button0.grid(row=4, column=0, sticky='EW')
@@ -334,7 +336,7 @@ class App:
 
         def is_running(self, process):
                 ps = commands.getoutput('ps -A | grep %s' % process ).split()
-                print (ps)
+                #print (ps)
                 if process in ps:
                     return True
                 elif process not in ps:   
@@ -396,6 +398,10 @@ class App:
             # if time string has changed, update it
             if s != self.clock["text"]:
                 self.clock["text"] = s
+            if (self.is_running("gpsd") == True):
+                self.label10["text"] = "GPS: On"
+            else:
+                self.label10["text"] = "GPS: Off"
             # get the current position from gpsd
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
