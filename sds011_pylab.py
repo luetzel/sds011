@@ -6,7 +6,7 @@
 # Date:     2017-03-08
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
-# Version:  1.6.0
+# Version:  1.6.3
 # License:  GPL 3.0
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:  Store data without simplekml module
@@ -457,6 +457,20 @@ class App:
                 file.write("</kml>\n")  
                 file.close()
 
+        def error_popup(self, message, buttontext):
+            var = IntVar()
+            dialog = Toplevel(root)
+            dialog.overrideredirect(True)
+            dialog.title("Error!")
+            label0  = Label(dialog, text = message, fg="red", font=("Courier",10, "bold"))
+            label0.grid(row=0, column=0, columnspan=3, sticky='EW')
+            button0 = Button(dialog, text = buttontext, fg="white", bg="red", font=("Courier",10, "bold") , command = lambda: var.set(1))
+            button0.grid(row=1, column=1, columnspan=1, sticky='EW')
+            dialog.geometry('255x50+112+135')
+            dialog.update()
+            button0.wait_variable(var)
+            dialog.destroy()   
+
 try:
     # generate main window    
     root = Tk()
@@ -479,12 +493,12 @@ try:
             ser.flushInput()
             break
         # Error message in case PM sensor isn't connected
-        except OSError:
+        except Exception:
             root.withdraw()
-            var = tkMessageBox.showerror("Error","Error: PM sensor not connected!")
+            app.error_popup("Error: PM sensor not connected!", "Retry")
             root.deiconify()
             root.update()
-            
+
     # start GPS connection        
     while True:        
         try:
@@ -494,9 +508,9 @@ try:
         # Error message in case gpsd not running    
         except Exception:
             root.withdraw()
-            var = tkMessageBox.showerror("Error", "Error: GPS not connected!")
-            root.deiconify()
-            root.update()
+            app.error_popup("Error: GPS sensor malfunction!", "OK")
+            app.error_popup("Please reboot your system!", "Reboot")
+            os.system("sudo reboot")
             
     # start clock        
     app.tick()
