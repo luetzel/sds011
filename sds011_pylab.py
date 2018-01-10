@@ -7,7 +7,7 @@
 # Name:     sds011_pylab.py
 # Purpose:  UI for controlling SDS011 PM sensor
 # Version:  1.6.3
-# License:  GPL 3.0
+# License:  CC-BY-NC-SA
 # Depends:  must use Python 2.7, requires matplotlib
 # Changes:  Store data without simplekml module
 #           Draw lines instead of placemarks
