@@ -333,8 +333,8 @@ class App:
                 self.sensor_sleep()
 
         def is_running(self, process):
-                ps = commands.getoutput('ps -A | grep gpsd')
-                if 'gpsd' in ps:
+                ps = commands.getoutput("ps -A | grep %s" % process )
+                if process in ps:
                     return True
                 else:   
                     return False
@@ -465,6 +465,7 @@ try:
     root.overrideredirect(True)
     app = App(root)
     root.geometry("480x320+0+0")
+    root.update()
     
     # open serial port
     while True:
@@ -479,6 +480,7 @@ try:
         # Error message in case PM sensor isn't connected
         except OSError:
             root.withdraw()
+            root.update()
             tkMessageBox.showerror("Error","Error: PM sensor not connected!")
             root.deiconify()
             root.update()
@@ -492,6 +494,7 @@ try:
         # Error message in case gpsd not running    
         except Exception:
             root.withdraw()
+            root.update()
             tkMessageBox.showerror("Error", "Error: GPS not connected!")
             root.deiconify()
             root.update()
