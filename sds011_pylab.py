@@ -400,8 +400,10 @@ class App:
                 self.clock["text"] = s
             if (self.is_running("gpsd") == True):
                 self.label10["text"] = "GPS: On"
+                self.label10["fg"] = "green"
             else:
                 self.label10["text"] = "GPS: Off"
+                self.label10["fg"] = "red"
             # get the current position from gpsd
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
