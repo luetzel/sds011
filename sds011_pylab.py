@@ -468,7 +468,7 @@ class App:
         def error_popup(self, message, buttontext):
             var = IntVar()
             dialog = Toplevel(root)
-            dialog.overrideredirect(True)
+            #dialog.overrideredirect(True)
             dialog.title("Error!")
             label0  = Label(dialog, text = message, fg="red", font=("Courier",10, "bold"))
             label0.grid(row=0, column=0, columnspan=3, sticky='EW')
@@ -516,8 +516,8 @@ try:
         # Error message in case gpsd not running    
         except Exception:
             root.withdraw()
-            app.error_popup("Error: GPS sensor malfunction!", "OK")
-            app.error_popup("Please reboot your system!", "Reboot")
+            app.error_popup(" Error: GPS sensor malfunction!", "OK")
+            app.error_popup("  Please reboot your system!", "Reboot")
             os.system("sudo reboot")
             
     # start clock        
