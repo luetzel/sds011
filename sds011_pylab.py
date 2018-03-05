@@ -31,7 +31,7 @@ from __future__ import print_function
 from gps import *
 from Tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime, commands
+import serial, struct, time, pylab, csv, datetime, threading, tkMessageBox, os, getpass, subprocess, datetime, commands, math
 
 # setting the global variable
 gpsd = None
@@ -65,8 +65,8 @@ class App:
             
             # sample time in "Auto" mode 
             global sampletime, intervall
-            sampletime = 600
-            intervall = 30
+            sampletime = 600 # default 600
+            intervall = 30 # default 30
             displayfont = "Courier"
             fontsize = 10
             # -- end of general settings --
@@ -137,11 +137,11 @@ class App:
             button5 = Button(frame, text="Quit", bg="purple", fg="white", font=(displayfont,fontsize,"bold"), command=self.quit)
             button5.grid(row=4, column=5, sticky='EW')
 
-            fig = pylab.figure(dpi=68, facecolor='w', edgecolor='k')
-            self.canvas = FigureCanvasTkAgg(fig, master=master)
+            self.fig = pylab.figure(dpi=68, facecolor='w', edgecolor='k')
+            self.canvas = FigureCanvasTkAgg(self.fig, master=master)
             self.canvas.show()
             self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-            self.ax = fig.add_subplot(111) # 1st subplot 1x1 grid
+            self.ax = self.fig.add_subplot(111) # 1st subplot 1x1 grid
             self.clear_plot()
             self.plot = False
             
@@ -197,7 +197,6 @@ class App:
                 ser.write(b)
 
         def process_frame(self, d):
-
             # dump raw data to console
             #dump_data(d)
 
@@ -213,12 +212,23 @@ class App:
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
             gps_time = gpsd.utc
-
-            # print data on display
-            self.latitude.set(str(latitude)[:8])
-            self.longitude.set(str(longitude)[:8])
+            
+            if (latitude != 0.0) and (longitude != 0.0 ) and ( math.isnan(latitude) == False) and (math.isnan(longitude) == False):
+                self.latitude.set(str(latitude)[:8])
+                self.longitude.set(str(longitude)[:8])
+            else:
+                self.latitude.set("---/----")
+                self.longitude.set("---/----")
+            
+            # send PM data to display
             self.result_pm25.set(pm25)
             self.result_pm10.set(pm10)
+            
+            # get the current local time from the PC
+            s = time.strftime('%H:%M:%S')
+            # if time string has changed, update it
+            if s != self.clock["text"]:
+                self.clock["text"] = s
 
             # pack results into variable
             data = [pm25, pm10, longitude, latitude, gps_time]
@@ -266,6 +276,7 @@ class App:
             # create kml filenames
             fname25_line = kmlpath+'pm_25_line_'+datetime.datetime.now().strftime ("%Y%m%d_%H_%M_%S")+'.kml'
             fname10_line = kmlpath+'pm_10_line_'+datetime.datetime.now().strftime ("%Y%m%d_%H_%M_%S")+'.kml'
+            fname_plot = kmlpath+'plot_'+datetime.datetime.now().strftime ("%Y%m%d_%H_%M_%S")+'.png'
             
             # create kml files
             self.write_kml_file(fname25_line, "25")
@@ -314,7 +325,7 @@ class App:
                 time.sleep(20)
             
             # measurement done - send sensor to sleep
-            self.sensor_sleep()
+            #self.sensor_sleep()
             
             # close kml files
             self.close_kml_file(fname25_line, "25")
@@ -328,11 +339,13 @@ class App:
             if var == True:
                 root.deiconify()
                 root.update()
+                self.fig.savefig(fname_plot)
                 self.sensor_live()
             else:
                 root.deiconify()
                 root.update()
-                self.sensor_sleep()
+                self.fig.savefig(fname_plot)
+                #self.sensor_sleep()
 
         def is_running(self, process):
                 ps = commands.getoutput('ps -A | grep %s' % process ).split()
@@ -368,12 +381,12 @@ class App:
             if var == False:
                 root.deiconify()
                 root.update()
-                self.sensor_sleep()
+                #self.sensor_sleep()
             elif var == True:
                 root.deiconify()
                 root.update()
-                os.system("sudo rm -rf /home/pi/kmldata/*")
-                self.sensor_sleep()
+                os.system("sudo rm -rf " + kmlpath + "*")
+                #self.sensor_sleep()
             
         def color_selection(self, value):
             # default
@@ -404,15 +417,22 @@ class App:
             else:
                 self.label10["text"] = "GPS: Off"
                 self.label10["fg"] = "red"
+
             # get the current position from gpsd
             latitude = gpsd.fix.latitude
             longitude = gpsd.fix.longitude
             # dummy values for debugging
             #latitude = 52.12345
             #longitude = 11.12345
+            
             # print data on display
-            self.latitude.set(str(latitude)[:8])
-            self.longitude.set(str(longitude)[:8])
+            if (latitude != 0.0) and (longitude != 0.0 ) and ( math.isnan(latitude) == False) and (math.isnan(longitude) == False):
+                self.latitude.set(str(latitude)[:8])
+                self.longitude.set(str(longitude)[:8])
+            else:
+                self.latitude.set("---/----")
+                self.longitude.set("---/----")
+                
             # update time and position each 1000 ms
             self.clock.after(1000, self.tick)
 
@@ -484,8 +504,7 @@ try:
     root = Tk()
     root.wm_title("SDS011 PM-Sensor")
     
-    # hide window decoration
-    root.overrideredirect(True)
+    #root.overrideredirect(True) # hide window decoration
     app = App(root)
     root.geometry("480x320+0+0")
     root.update()
