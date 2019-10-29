@@ -88,7 +88,7 @@ class App:
             '\x00', #data byte 13
             '\xff', #data byte 14 (device id byte 1)
             '\xff', #data byte 15 (device id byte 2)
-            '\x05', #checksum
+            '\x06', #checksum
             '\xab'] #tail
 
             for b in bytes:
